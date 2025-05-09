@@ -9,16 +9,39 @@ import (
 	"fmt"
 
 	"github.com/IlianBuh/GraphQL/internal/graph/model"
+	"github.com/IlianBuh/GraphQL/internal/lib/validate"
 )
 
 // SignUp is the resolver for the signUp field.
 func (r *mutationResolver) SignUp(ctx context.Context, login string, email string, password string) (*model.Token, error) {
-	return &model.Token{Token: "sosi"}, nil
+	if err := validate.SignUp(login, email, password); err != nil {
+		return nil, sendErr(InvalidInput, err)
+	}
+
+	token, err := r.sso.SignUp(ctx, login, email, password)
+	if err != nil {
+		// TODO : handle some error types
+
+		return nil, sendErr(Internal, err)
+	}
+
+	return &model.Token{Token: token}, nil
 }
 
 // LogIn is the resolver for the logIn field.
 func (r *queryResolver) LogIn(ctx context.Context, login string, password string) (*model.Token, error) {
-	panic(fmt.Errorf("not implemented: LogIn - logIn"))
+	if err := validate.LogIn(login, password); err != nil {
+		return nil, sendErr(InvalidInput, err)
+	}
+
+	token, err := r.sso.LogIn(ctx, login, password)
+	if err != nil {
+		// TODO : handle errors
+
+		return nil, sendErr(Internal, err)
+	}
+
+	return &model.Token{Token: token}, nil
 }
 
 // FollowersList is the resolver for the followersList field.
