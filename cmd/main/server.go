@@ -1,43 +1,56 @@
 package main
 
 import (
-	"log"
-	"net/http"
+	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/handler/extension"
-	"github.com/99designs/gqlgen/graphql/handler/lru"
-	"github.com/99designs/gqlgen/graphql/handler/transport"
-	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/IlianBuh/GraphQL/graph"
-	"github.com/vektah/gqlparser/v2/ast"
+	"github.com/IlianBuh/GraphQL/internal/app"
+	"github.com/IlianBuh/GraphQL/internal/config"
+)
+
+const (
+	envLocal = "local"
+	envDev   = "dev"
+	envProd  = "prod"
 )
 
 const defaultPort = "8080"
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
+	cfg := config.New()
+
+	log := setUpLogger(cfg.Env)
+
+	application := app.New(log, cfg.Port, cfg.SSOClient)
+
+	application.GraphQL.Start()
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	sign := <-stop
+	log.Info("stopped signal was received", slog.Any("signal", sign))
+
+	application.GraphQL.Stop()
+}
+
+func setUpLogger(env string) *slog.Logger {
+	switch env {
+	case envLocal:
+		return slog.New(
+			slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
+		)
+	case envDev:
+		return slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
+		)
+	case envProd:
+		return slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}),
+		)
 	}
 
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
-
-	srv.AddTransport(transport.Options{})
-	srv.AddTransport(transport.GET{})
-	srv.AddTransport(transport.POST{})
-
-	srv.SetQueryCache(lru.New[*ast.QueryDocument](1000))
-
-	srv.Use(extension.Introspection{})
-	srv.Use(extension.AutomaticPersistedQuery{
-		Cache: lru.New[string](100),
-	})
-
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
-
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	return nil
 }
