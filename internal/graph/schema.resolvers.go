@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/IlianBuh/GraphQL/graph/model"
+	"github.com/IlianBuh/GraphQL/internal/graph/model"
 )
 
 // SignUp is the resolver for the signUp field.
