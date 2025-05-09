@@ -1,0 +1,4 @@
+port: 8080
+sso-client: 
+  host: "localhost"
+  port: 8081
