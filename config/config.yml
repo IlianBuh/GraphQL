@@ -1,3 +1,4 @@
+env: "local"
 port: 8080
 sso-client: 
   host: "localhost"

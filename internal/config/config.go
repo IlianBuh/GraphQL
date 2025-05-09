@@ -13,6 +13,7 @@ const (
 )
 
 type Config struct {
+	Env       string    `yaml:"env" env-required=true`
 	Port      int       `yaml:"port" env-required=true`
 	SSOClient SSOConfig `yaml:"sso-client" env-required=true`
 }
