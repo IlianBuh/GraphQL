@@ -16,15 +16,12 @@ const (
 	envProd  = "prod"
 )
 
-const defaultPort = "8080"
-
 func main() {
 	cfg := config.New()
 
 	log := setUpLogger(cfg.Env)
 
-	application := app.New(log, cfg.Port, cfg.SSOClient)
-
+	application := app.New(log, cfg.Port, cfg.Timemout, cfg.SSOClient)
 	application.GraphQL.Start()
 
 	stop := make(chan os.Signal, 1)
@@ -33,7 +30,7 @@ func main() {
 	sign := <-stop
 	log.Info("stopped signal was received", slog.Any("signal", sign))
 
-	application.GraphQL.Stop()
+	application.Stop()
 }
 
 func setUpLogger(env string) *slog.Logger {
