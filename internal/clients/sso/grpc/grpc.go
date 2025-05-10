@@ -4,14 +4,19 @@ import (
 	"context"
 	"log/slog"
 
+	"github.com/IlianBuh/GraphQL/internal/clients/sso"
+	ssocodes "github.com/IlianBuh/GraphQL/internal/clients/sso/sso-codes"
 	"github.com/IlianBuh/GraphQL/internal/domain/models"
 	"github.com/IlianBuh/GraphQL/internal/lib/net"
 	"github.com/IlianBuh/GraphQL/internal/lib/sl"
 	e "github.com/IlianBuh/GraphQL/pkg/errors"
 	authv1 "github.com/IlianBuh/SSO_Protobuf/gen/go/auth"
 	userinfov1 "github.com/IlianBuh/SSO_Protobuf/gen/go/userinfo"
+
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 )
 
 type Client struct {
@@ -21,7 +26,7 @@ type Client struct {
 	connection *grpc.ClientConn
 }
 
-func New(
+func NewClient(
 	log *slog.Logger,
 	port int,
 	host string,
@@ -67,10 +72,20 @@ func (c *Client) SignUp(
 		},
 	)
 	if err != nil {
-		// TODO : handle errors
-
-		log.Error("failed to sign up user", sl.Err(err))
-		return "", e.Fail(op, err)
+		switch status.Code(err) {
+		case codes.InvalidArgument:
+			log.Warn("invalid arguments", sl.Err(err))
+			return "",
+				sso.NewError(e.Fail(op, err), ssocodes.InvalidArgument)
+		case codes.Internal:
+			log.Error("internal error", sl.Err(err))
+			return "",
+				sso.NewError(e.Fail(op, err), ssocodes.Internal)
+		default:
+			log.Error("unknown error was received from sso", sl.Err(err))
+			return "",
+				sso.NewError(e.Fail(op, err), ssocodes.Unknown)
+		}
 	}
 
 	log.Info("user is signed up")
@@ -97,10 +112,20 @@ func (c *Client) LogIn(
 		},
 	)
 	if err != nil {
-		// TODO : handle errors
-
-		log.Error("failed to log in user", sl.Err(err))
-		return "", e.Fail(op, err)
+		switch status.Code(err) {
+		case codes.InvalidArgument:
+			log.Warn("invalid arguments", sl.Err(err))
+			return "",
+				sso.NewError(e.Fail(op, err), ssocodes.InvalidArgument)
+		case codes.Internal:
+			log.Error("internal error", sl.Err(err))
+			return "",
+				sso.NewError(e.Fail(op, err), ssocodes.Internal)
+		default:
+			log.Error("unknown error was received from sso", sl.Err(err))
+			return "",
+				sso.NewError(e.Fail(op, err), ssocodes.Unknown)
+		}
 	}
 
 	log.Info("user is logged in")
