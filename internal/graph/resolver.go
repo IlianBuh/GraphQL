@@ -28,5 +28,5 @@ type SsoService interface {
 }
 
 type Resolver struct {
-	sso SsoService
+	SSO SsoService
 }

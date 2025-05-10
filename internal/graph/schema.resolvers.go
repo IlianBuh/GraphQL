@@ -6,22 +6,25 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"github.com/IlianBuh/GraphQL/internal/clients/sso"
 	"github.com/IlianBuh/GraphQL/internal/graph/model"
 	"github.com/IlianBuh/GraphQL/internal/lib/validate"
 )
 
-// SignUp is the resolver for the signUp field.
 func (r *mutationResolver) SignUp(ctx context.Context, login string, email string, password string) (*model.Token, error) {
 	if err := validate.SignUp(login, email, password); err != nil {
-		return nil, sendErr(InvalidInput, err)
+		return nil, sendErr(InvalidArgument, err)
 	}
 
-	token, err := r.sso.SignUp(ctx, login, email, password)
+	token, err := r.SSO.SignUp(ctx, login, email, password)
 	if err != nil {
-		// TODO : handle some error types
-
+		var ssoerr *sso.Error
+		if errors.As(err, &ssoerr) {
+			return nil, handleSsoError(ssoerr)
+		}
 		return nil, sendErr(Internal, err)
 	}
 
@@ -31,12 +34,15 @@ func (r *mutationResolver) SignUp(ctx context.Context, login string, email strin
 // LogIn is the resolver for the logIn field.
 func (r *queryResolver) LogIn(ctx context.Context, login string, password string) (*model.Token, error) {
 	if err := validate.LogIn(login, password); err != nil {
-		return nil, sendErr(InvalidInput, err)
+		return nil, sendErr(InvalidArgument, err)
 	}
 
-	token, err := r.sso.LogIn(ctx, login, password)
+	token, err := r.SSO.LogIn(ctx, login, password)
 	if err != nil {
-		// TODO : handle errors
+		var ssoerr *sso.Error
+		if errors.As(err, &ssoerr) {
+			return nil, handleSsoError(ssoerr)
+		}
 
 		return nil, sendErr(Internal, err)
 	}
@@ -44,9 +50,19 @@ func (r *queryResolver) LogIn(ctx context.Context, login string, password string
 	return &model.Token{Token: token}, nil
 }
 
-// FollowersList is the resolver for the followersList field.
-func (r *queryResolver) FollowersList(ctx context.Context, userID int32) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented: FollowersList - followersList"))
+// ListFollowers is the resolver for the listFollowers field.
+func (r *queryResolver) ListFollowers(ctx context.Context, userID int32) ([]*model.User, error) {
+	panic(fmt.Errorf("not implemented: ListFollowers - listFollowers"))
+}
+
+// User is the resolver for the user field.
+func (r *queryResolver) User(ctx context.Context, id int32) (*model.User, error) {
+	panic(fmt.Errorf("not implemented: User - user"))
+}
+
+// Users is the resolver for the users field.
+func (r *queryResolver) Users(ctx context.Context, id []int32) ([]*model.User, error) {
+	panic(fmt.Errorf("not implemented: Users - users"))
 }
 
 // Mutation returns MutationResolver implementation.
@@ -57,18 +73,3 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
-}
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
-}
-*/

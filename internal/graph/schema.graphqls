@@ -15,7 +15,9 @@ type Token {
 
 type Query {
   logIn(login: String!, password: String!): Token! 
-  followersList(userId: Int!): [User!]!
+  listFollowers(userId: Int!): [User!]!
+  user(id: Int!): User!
+  users(id: [Int!]!): [User!]!
 }
 
 type Mutation {
