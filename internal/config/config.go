@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
@@ -13,9 +14,10 @@ const (
 )
 
 type Config struct {
-	Env       string    `yaml:"env" env-required=true`
-	Port      int       `yaml:"port" env-required=true`
-	SSOClient SSOConfig `yaml:"sso-client" env-required=true`
+	Env       string        `yaml:"env" env-required=true`
+	Port      int           `yaml:"port" env-required=true`
+	Timemout  time.Duration `yaml:"timeout" env-default="10s"`
+	SSOClient SSOConfig     `yaml:"sso-client" env-required=true`
 }
 
 type SSOConfig struct {
