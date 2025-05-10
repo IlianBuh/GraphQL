@@ -1,0 +1,15 @@
+version: '3'
+
+tasks:
+  default:
+    -task gen
+
+  generate-graphql-handlers:
+    aliases:
+      - gen
+      - gen-graphql
+    cmds:
+      - go get github.com/99designs/gqlgen@v0.17.73
+      - go run github.com/99designs/gqlgen@v0.17.73 generate --config="./config/gqlgen.yml"
+    silent: false
+    desc: "the command generate graphql handlers according to schema which is setted with config in ./config/gplgen.yml"
