@@ -4,7 +4,7 @@ go 1.24.3
 
 require (
 	github.com/99designs/gqlgen v0.17.73
-	github.com/IlianBuh/SSO_Protobuf v0.0.4
+	github.com/IlianBuh/SSO_Protobuf v0.0.9
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/vektah/gqlparser/v2 v2.5.26
 	google.golang.org/grpc v1.72.0

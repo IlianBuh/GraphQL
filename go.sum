@@ -3,8 +3,8 @@ github.com/99designs/gqlgen v0.17.73/go.mod h1:2RyGWjy2k7W9jxrs8MOQthXGkD3L3oGr0
 github.com/BurntSushi/toml v1.2.1/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
 github.com/BurntSushi/toml v1.4.0 h1:kuoIxZQy2WRRk1pttg9asf+WVv6tWQuBNVmK8+nqPr0=
 github.com/BurntSushi/toml v1.4.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
-github.com/IlianBuh/SSO_Protobuf v0.0.4 h1:vEGF2T5xz3qeOseEA7TaMY8Ejzx8uNEMByBylQ/13pY=
-github.com/IlianBuh/SSO_Protobuf v0.0.4/go.mod h1:qbbWln81jp5BMA6/Tj061e+xhBWgc7dZ45VTpRWXDZ8=
+github.com/IlianBuh/SSO_Protobuf v0.0.9 h1:NyR6nXzCEPz68aPoUYt/MTeZhm9FGSRf7VXuD3BoSR0=
+github.com/IlianBuh/SSO_Protobuf v0.0.9/go.mod h1:qbbWln81jp5BMA6/Tj061e+xhBWgc7dZ45VTpRWXDZ8=
 github.com/PuerkitoBio/goquery v1.10.3 h1:pFYcNSqHxBD06Fpj/KsbStFRsgRATgnf3LeXiUkhzPo=
 github.com/PuerkitoBio/goquery v1.10.3/go.mod h1:tMUX0zDMHXYlAQk6p35XxQMqMweEKB7iK7iLNd4RH4Y=
 github.com/agnivade/levenshtein v1.2.1 h1:EHBY3UOn1gwdy/VbFwgo4cxecRznFk7fKWN1KOX7eoM=
