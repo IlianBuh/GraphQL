@@ -47,7 +47,21 @@ type SSOApi interface {
 	FollowersList(
 		ctx context.Context,
 		userID int32,
-	) ([]models.User, error)
+	) ([]*models.User, error)
+	FolloweesList(
+		ctx context.Context,
+		userID int32,
+	) ([]*models.User, error)
+	Follow(
+		ctx context.Context,
+		srcId int,
+		targetId int,
+	) error
+	Unfollow(
+		ctx context.Context,
+		srcId int,
+		targetId int,
+	) error
 }
 
 func New(

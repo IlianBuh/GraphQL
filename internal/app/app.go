@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/IlianBuh/GraphQL/internal/app/graphql"
-	sso "github.com/IlianBuh/GraphQL/internal/clients/sso/grpc"
+	sso "github.com/IlianBuh/GraphQL/internal/clients/sso"
 	"github.com/IlianBuh/GraphQL/internal/config"
 	"github.com/IlianBuh/GraphQL/internal/lib/sl"
 	e "github.com/IlianBuh/GraphQL/pkg/errors"
@@ -16,7 +16,7 @@ const emptyHost = ""
 type App struct {
 	log       *slog.Logger
 	GraphQL   *graphql.GraphQLApp
-	SSOClient *sso.Client
+	SSOClient *sso.SSOClient
 }
 
 func New(
