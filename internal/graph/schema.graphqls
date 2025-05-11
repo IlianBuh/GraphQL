@@ -6,7 +6,6 @@ type User {
   id: Int!
   name: String!
   email: String!
-  followers: [User!]!
 }
 
 type Token {
@@ -16,10 +15,13 @@ type Token {
 type Query {
   logIn(login: String!, password: String!): Token! 
   listFollowers(userId: Int!): [User!]!
+  listFollowees(userId: Int!): [User!]!
   user(id: Int!): User!
   users(id: [Int!]!): [User!]!
 }
 
 type Mutation {
   signUp(login: String!, email: String!, password: String!): Token! 
+  follow(srcId: Int!, targetId: Int!): String
+  unfollow(srcId: Int!, targetId: Int!): String
 }

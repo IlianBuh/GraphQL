@@ -13,8 +13,7 @@ type Token struct {
 }
 
 type User struct {
-	ID        int32   `json:"id"`
-	Name      string  `json:"name"`
-	Email     string  `json:"email"`
-	Followers []*User `json:"followers"`
+	ID    int32  `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }

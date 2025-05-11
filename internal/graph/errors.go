@@ -3,8 +3,8 @@ package graph
 import (
 	"errors"
 
-	"github.com/IlianBuh/GraphQL/internal/clients/sso"
-	ssocodes "github.com/IlianBuh/GraphQL/internal/clients/sso/sso-codes"
+	ssocodes "github.com/IlianBuh/GraphQL/internal/clients/sso/codes"
+	serrors "github.com/IlianBuh/GraphQL/internal/clients/sso/errors"
 )
 
 const (
@@ -12,7 +12,7 @@ const (
 	Internal        = "internal"
 )
 
-func handleSsoError(err *sso.Error) error {
+func handleSsoError(err *serrors.Error) error {
 	switch err.Code {
 	case ssocodes.InvalidArgument:
 		return sendErr(InvalidArgument, err)

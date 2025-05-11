@@ -9,11 +9,13 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/IlianBuh/GraphQL/internal/clients/sso"
+	serrors "github.com/IlianBuh/GraphQL/internal/clients/sso/errors"
 	"github.com/IlianBuh/GraphQL/internal/graph/model"
+	"github.com/IlianBuh/GraphQL/internal/lib/mapper"
 	"github.com/IlianBuh/GraphQL/internal/lib/validate"
 )
 
+// SignUp is the resolver for the signUp field.
 func (r *mutationResolver) SignUp(ctx context.Context, login string, email string, password string) (*model.Token, error) {
 	if err := validate.SignUp(login, email, password); err != nil {
 		return nil, sendErr(InvalidArgument, err)
@@ -21,7 +23,7 @@ func (r *mutationResolver) SignUp(ctx context.Context, login string, email strin
 
 	token, err := r.SSO.SignUp(ctx, login, email, password)
 	if err != nil {
-		var ssoerr *sso.Error
+		var ssoerr *serrors.Error
 		if errors.As(err, &ssoerr) {
 			return nil, handleSsoError(ssoerr)
 		}
@@ -29,6 +31,40 @@ func (r *mutationResolver) SignUp(ctx context.Context, login string, email strin
 	}
 
 	return &model.Token{Token: token}, nil
+}
+
+// Follow is the resolver for the follow field.
+func (r *mutationResolver) Follow(ctx context.Context, srcID int32, targetID int32) (*string, error) {
+	if err := validate.Id(srcID); err != nil {
+		return nil, sendErr(InvalidArgument, err)
+	}
+	if err := validate.Id(targetID); err != nil {
+		return nil, sendErr(InvalidArgument, err)
+	}
+
+	err := r.SSO.Follow(ctx, int(srcID), int(targetID))
+	if err != nil {
+		return nil, sendErr(Internal, err)
+	}
+
+	return nil, nil
+}
+
+// Unfollow is the resolver for the unfollow field.
+func (r *mutationResolver) Unfollow(ctx context.Context, srcID int32, targetID int32) (*string, error) {
+	if err := validate.Id(srcID); err != nil {
+		return nil, sendErr(InvalidArgument, err)
+	}
+	if err := validate.Id(targetID); err != nil {
+		return nil, sendErr(InvalidArgument, err)
+	}
+
+	err := r.SSO.Follow(ctx, int(srcID), int(targetID))
+	if err != nil {
+		return nil, sendErr(Internal, err)
+	}
+
+	return nil, nil
 }
 
 // LogIn is the resolver for the logIn field.
@@ -39,7 +75,7 @@ func (r *queryResolver) LogIn(ctx context.Context, login string, password string
 
 	token, err := r.SSO.LogIn(ctx, login, password)
 	if err != nil {
-		var ssoerr *sso.Error
+		var ssoerr *serrors.Error
 		if errors.As(err, &ssoerr) {
 			return nil, handleSsoError(ssoerr)
 		}
@@ -52,7 +88,40 @@ func (r *queryResolver) LogIn(ctx context.Context, login string, password string
 
 // ListFollowers is the resolver for the listFollowers field.
 func (r *queryResolver) ListFollowers(ctx context.Context, userID int32) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented: ListFollowers - listFollowers"))
+	if err := validate.Id(userID); err != nil {
+		return nil, sendErr(InvalidArgument, err)
+	}
+
+	users, err := r.SSO.FollowersList(ctx, userID)
+	if err != nil {
+		var ssoerr *serrors.Error
+		if errors.As(err, &ssoerr) {
+			return nil, handleSsoError(ssoerr)
+		}
+
+		return nil, sendErr(Internal, err)
+	}
+
+	return mapper.UserToApi(users), nil
+}
+
+// ListFollowers is the resolver for the listFollowers field.
+func (r *queryResolver) ListFollowees(ctx context.Context, userID int32) ([]*model.User, error) {
+	if err := validate.Id(userID); err != nil {
+		return nil, sendErr(InvalidArgument, err)
+	}
+
+	users, err := r.SSO.FolloweesList(ctx, userID)
+	if err != nil {
+		var ssoerr *serrors.Error
+		if errors.As(err, &ssoerr) {
+			return nil, handleSsoError(ssoerr)
+		}
+
+		return nil, sendErr(Internal, err)
+	}
+
+	return mapper.UserToApi(users), nil
 }
 
 // User is the resolver for the user field.
