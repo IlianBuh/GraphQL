@@ -1,4 +1,4 @@
-package ssocodes
+package codes
 
 const (
 	Ok              = 0

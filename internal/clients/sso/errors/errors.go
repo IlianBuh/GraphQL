@@ -1,6 +1,6 @@
-package sso
+package errors
 
-import ssocodes "github.com/IlianBuh/GraphQL/internal/clients/sso/sso-codes"
+import codes "github.com/IlianBuh/GraphQL/internal/clients/sso/codes"
 
 type Error struct {
 	base    error
@@ -11,7 +11,7 @@ type Error struct {
 func NewError(err error, code int) *Error {
 	return &Error{
 		base:    err,
-		message: ssocodes.Text(code),
+		message: codes.Text(code),
 		Code:    code,
 	}
 }
