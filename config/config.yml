@@ -1,0 +1,6 @@
+env: "local"
+port: 8080
+timeout: 10s
+sso-client: 
+  host: "localhost"
+  port: 20202 
