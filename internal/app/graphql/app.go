@@ -75,6 +75,10 @@ type SSOApi interface {
 		ctx context.Context,
 		uuid []int,
 	) (bool, error)
+	UsersByLogin(
+		ctx context.Context,
+		login string,
+	) ([]*models.User, error)
 }
 
 func New(
