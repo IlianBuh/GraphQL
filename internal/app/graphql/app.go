@@ -62,6 +62,19 @@ type SSOApi interface {
 		srcId int,
 		targetId int,
 	) error
+
+	User(
+		ctx context.Context,
+		uuid int,
+	) (*models.User, error)
+	Users(
+		ctx context.Context,
+		uuid []int,
+	) ([]*models.User, error)
+	UsersExist(
+		ctx context.Context,
+		uuid []int,
+	) (bool, error)
 }
 
 func New(
