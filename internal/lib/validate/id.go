@@ -17,3 +17,15 @@ func Id[T number](id T) error {
 
 	return nil
 }
+func Ids[T number](ids []T) error {
+	var err error
+	for _, id := range ids {
+
+		if err = Id(id); err != nil {
+			return err
+		}
+
+	}
+
+	return nil
+}
