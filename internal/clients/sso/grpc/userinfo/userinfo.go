@@ -82,3 +82,19 @@ func (c *UserInfoClient) UsersExist(ctx context.Context, uuid []int) (bool, erro
 	log.Info("checking completed")
 	return isExists.GetExist(), nil
 }
+
+func (c *UserInfoClient) UsersByLogin(ctx context.Context, login string) ([]*models.User, error) {
+	const op = "userinfo-client.UsersByLogin"
+	log := c.log.With(slog.String("op", op))
+	log.Info("starting to fetch users by login", slog.String("login", login))
+
+	users, err := c.userinfo.UsersByLogin(ctx, &userinfov1.UsersByLoginRequest{
+		Login: login,
+	})
+	if err != nil {
+		log.Error("failed to get users", sl.Err(err))
+		return nil, sgrpc.HandleError(op, err, log)
+	}
+
+	return mapper.MGrpcUserToDomain(users.GetUsers()), nil
+}

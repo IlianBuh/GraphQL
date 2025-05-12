@@ -54,6 +54,7 @@ type UserInfoClient interface {
 	User(ctx context.Context, uuid int) (*models.User, error)
 	Users(ctx context.Context, uuid []int) ([]*models.User, error)
 	UsersExist(ctx context.Context, uuid []int) (bool, error)
+	UsersByLogin(ctx context.Context, login string) ([]*models.User, error)
 }
 
 type SSOClient struct {
@@ -159,6 +160,11 @@ func (s *SSOClient) User(ctx context.Context, uuid int) (*models.User, error) {
 func (s *SSOClient) Users(ctx context.Context, uuid []int) ([]*models.User, error) {
 	return s.userinfo.Users(ctx, uuid)
 }
+
 func (s *SSOClient) UsersExist(ctx context.Context, uuid []int) (bool, error) {
 	return s.userinfo.UsersExist(ctx, uuid)
+}
+
+func (s *SSOClient) UsersByLogin(ctx context.Context, login string) ([]*models.User, error) {
+	return s.userinfo.UsersByLogin(ctx, login)
 }
