@@ -18,6 +18,7 @@ type Query {
   listFollowees(Id: Int!): [User!]!
   user(Id: Int!): User!
   users(Id: [Int!]!): [User!]!
+  usersByLogin(Login: String!): [User!]!
 }
 
 type Mutation {

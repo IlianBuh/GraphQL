@@ -161,6 +161,20 @@ func (r *queryResolver) Users(ctx context.Context, id []int32) ([]*model.User, e
 	return mapper.MUsersToApi(users), err
 }
 
+// UsersByLogin is the resolver for the usersByLogin field.
+func (r *queryResolver) UsersByLogin(ctx context.Context, login string) ([]*model.User, error) {
+	if err := validate.Login(login); err != nil {
+		return nil, sendErr(InvalidArgument, err)
+	}
+
+	users, err := r.SSO.UsersByLogin(ctx, login)
+	if err != nil {
+		return nil, sendErr(Internal, err)
+	}
+
+	return mapper.MUsersToApi(users), nil
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
