@@ -1,14 +1,13 @@
 package validate
 
-import "errors"
+import (
+	"errors"
+	"strings"
+)
 
-func LogIn(login, password string) error {
-	if isEmpty(login) {
-		return errors.New("login is required")
-	}
-
-	if len(password) < 8 {
-		return errors.New("password must be at least 8 symbols")
+func Login(login string) error {
+	if len(strings.Trim(login, " ")) == 0 {
+		return errors.New("login required")
 	}
 
 	return nil
