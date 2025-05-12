@@ -6,6 +6,7 @@ import (
 
 	"github.com/IlianBuh/GraphQL/internal/clients/sso/grpc/auth"
 	"github.com/IlianBuh/GraphQL/internal/clients/sso/grpc/follow"
+	"github.com/IlianBuh/GraphQL/internal/clients/sso/grpc/userinfo"
 	"github.com/IlianBuh/GraphQL/internal/domain/models"
 	"github.com/IlianBuh/GraphQL/internal/lib/net"
 	"github.com/IlianBuh/GraphQL/internal/lib/sl"
@@ -49,10 +50,17 @@ type FollowClient interface {
 	) error
 }
 
+type UserInfoClient interface {
+	User(ctx context.Context, uuid int) (*models.User, error)
+	Users(ctx context.Context, uuid []int) ([]*models.User, error)
+	UsersExist(ctx context.Context, uuid []int) (bool, error)
+}
+
 type SSOClient struct {
 	log        *slog.Logger
 	auth       AuthClient
 	follow     FollowClient
+	userinfo   UserInfoClient
 	connection *grpc.ClientConn
 }
 
@@ -65,18 +73,19 @@ func NewClient(
 	cc, err := grpc.NewClient(net.Join(host, port),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
-
-	auth := auth.NewClient(log, cc)
-	follow := follow.NewClient(log, cc)
-
 	if err != nil {
 		return nil, e.Fail(op, err)
 	}
+
+	auth := auth.NewClient(log, cc)
+	follow := follow.NewClient(log, cc)
+	userinfo := userinfo.NewClient(log, cc)
 
 	return &SSOClient{
 		log:        log,
 		auth:       auth,
 		follow:     follow,
+		userinfo:   userinfo,
 		connection: cc,
 	}, nil
 }
@@ -141,4 +150,15 @@ func (s *SSOClient) Stop() error {
 
 	log.Info("sso-clietn stopped")
 	return nil
+}
+
+func (s *SSOClient) User(ctx context.Context, uuid int) (*models.User, error) {
+	return s.userinfo.User(ctx, uuid)
+}
+
+func (s *SSOClient) Users(ctx context.Context, uuid []int) ([]*models.User, error) {
+	return s.userinfo.Users(ctx, uuid)
+}
+func (s *SSOClient) UsersExist(ctx context.Context, uuid []int) (bool, error) {
+	return s.userinfo.UsersExist(ctx, uuid)
 }

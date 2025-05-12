@@ -47,7 +47,7 @@ func (c *FollowClient) Follow(
 		return sgrpc.HandleError(op, err, log)
 	}
 
-	log.Info("user is logged in")
+	log.Info("user is followeds")
 	return nil
 }
 
@@ -72,7 +72,7 @@ func (c *FollowClient) Unfollow(
 		return sgrpc.HandleError(op, err, log)
 	}
 
-	log.Info("user is logged in")
+	log.Info("user is unfollowed")
 	return nil
 }
 
@@ -95,8 +95,8 @@ func (c *FollowClient) FollowersList(
 		return nil, sgrpc.HandleError(op, err, log)
 	}
 
-	log.Info("user is logged in")
-	return mapper.CrpcUserToDomain(resp.GetUser()), nil
+	log.Info("followers list is gotten")
+	return mapper.MGrpcUserToDomain(resp.GetUser()), nil
 }
 
 func (c *FollowClient) FolloweesList(
@@ -118,6 +118,6 @@ func (c *FollowClient) FolloweesList(
 		return nil, sgrpc.HandleError(op, err, log)
 	}
 
-	log.Info("user is logged in")
-	return mapper.CrpcUserToDomain(resp.GetUser()), nil
+	log.Info("followees list is gotten")
+	return mapper.MGrpcUserToDomain(resp.GetUser()), nil
 }
