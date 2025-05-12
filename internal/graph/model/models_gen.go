@@ -14,6 +14,6 @@ type Token struct {
 
 type User struct {
 	ID    int32  `json:"id"`
-	Name  string `json:"name"`
+	Login string `json:"login"`
 	Email string `json:"email"`
 }

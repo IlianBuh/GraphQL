@@ -22,6 +22,7 @@ type SsoService interface {
 		login string,
 		password string,
 	) (token string, _ error)
+
 	FollowersList(
 		ctx context.Context,
 		userID int32,
@@ -40,6 +41,19 @@ type SsoService interface {
 		srcId int,
 		targetId int,
 	) error
+
+	User(
+		ctx context.Context,
+		uuid int,
+	) (*models.User, error)
+	Users(
+		ctx context.Context,
+		uuid []int,
+	) ([]*models.User, error)
+	UsersExist(
+		ctx context.Context,
+		uuid []int,
+	) (bool, error)
 }
 
 type Resolver struct {

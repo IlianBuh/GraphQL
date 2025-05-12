@@ -7,7 +7,6 @@ package graph
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	serrors "github.com/IlianBuh/GraphQL/internal/clients/sso/errors"
 	"github.com/IlianBuh/GraphQL/internal/graph/model"
@@ -87,12 +86,12 @@ func (r *queryResolver) LogIn(ctx context.Context, login string, password string
 }
 
 // ListFollowers is the resolver for the listFollowers field.
-func (r *queryResolver) ListFollowers(ctx context.Context, userID int32) ([]*model.User, error) {
-	if err := validate.Id(userID); err != nil {
+func (r *queryResolver) ListFollowers(ctx context.Context, id int32) ([]*model.User, error) {
+	if err := validate.Id(id); err != nil {
 		return nil, sendErr(InvalidArgument, err)
 	}
 
-	users, err := r.SSO.FollowersList(ctx, userID)
+	users, err := r.SSO.FollowersList(ctx, id)
 	if err != nil {
 		var ssoerr *serrors.Error
 		if errors.As(err, &ssoerr) {
@@ -102,16 +101,16 @@ func (r *queryResolver) ListFollowers(ctx context.Context, userID int32) ([]*mod
 		return nil, sendErr(Internal, err)
 	}
 
-	return mapper.UserToApi(users), nil
+	return mapper.MUsersToApi(users), nil
 }
 
 // ListFollowers is the resolver for the listFollowers field.
-func (r *queryResolver) ListFollowees(ctx context.Context, userID int32) ([]*model.User, error) {
-	if err := validate.Id(userID); err != nil {
+func (r *queryResolver) ListFollowees(ctx context.Context, id int32) ([]*model.User, error) {
+	if err := validate.Id(id); err != nil {
 		return nil, sendErr(InvalidArgument, err)
 	}
 
-	users, err := r.SSO.FolloweesList(ctx, userID)
+	users, err := r.SSO.FolloweesList(ctx, id)
 	if err != nil {
 		var ssoerr *serrors.Error
 		if errors.As(err, &ssoerr) {
@@ -121,17 +120,45 @@ func (r *queryResolver) ListFollowees(ctx context.Context, userID int32) ([]*mod
 		return nil, sendErr(Internal, err)
 	}
 
-	return mapper.UserToApi(users), nil
+	return mapper.MUsersToApi(users), nil
 }
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id int32) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: User - user"))
+	if err := validate.Id(id); err != nil {
+		return nil, sendErr(InvalidArgument, err)
+	}
+
+	user, err := r.SSO.User(ctx, int(id))
+	if err != nil {
+		var ssoerr *serrors.Error
+		if errors.As(err, &ssoerr) {
+			return nil, handleSsoError(ssoerr)
+		}
+
+		return nil, sendErr(Internal, err)
+	}
+
+	return mapper.UserToApi(user), err
 }
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context, id []int32) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented: Users - users"))
+	if err := validate.Ids(id); err != nil {
+		return nil, sendErr(InvalidArgument, err)
+	}
+
+	users, err := r.SSO.Users(ctx, mapper.NumsTToNumsE[int32, int](id))
+	if err != nil {
+		var ssoerr *serrors.Error
+		if errors.As(err, &ssoerr) {
+			return nil, handleSsoError(ssoerr)
+		}
+
+		return nil, sendErr(Internal, err)
+	}
+
+	return mapper.MUsersToApi(users), err
 }
 
 // Mutation returns MutationResolver implementation.

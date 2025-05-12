@@ -54,8 +54,8 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		ListFollowees func(childComplexity int, userID int32) int
-		ListFollowers func(childComplexity int, userID int32) int
+		ListFollowees func(childComplexity int, id int32) int
+		ListFollowers func(childComplexity int, id int32) int
 		LogIn         func(childComplexity int, login string, password string) int
 		User          func(childComplexity int, id int32) int
 		Users         func(childComplexity int, id []int32) int
@@ -68,7 +68,7 @@ type ComplexityRoot struct {
 	User struct {
 		Email func(childComplexity int) int
 		ID    func(childComplexity int) int
-		Name  func(childComplexity int) int
+		Login func(childComplexity int) int
 	}
 }
 
@@ -79,8 +79,8 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	LogIn(ctx context.Context, login string, password string) (*model.Token, error)
-	ListFollowers(ctx context.Context, userID int32) ([]*model.User, error)
-	ListFollowees(ctx context.Context, userID int32) ([]*model.User, error)
+	ListFollowers(ctx context.Context, id int32) ([]*model.User, error)
+	ListFollowees(ctx context.Context, id int32) ([]*model.User, error)
 	User(ctx context.Context, id int32) (*model.User, error)
 	Users(ctx context.Context, id []int32) ([]*model.User, error)
 }
@@ -150,7 +150,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.ListFollowees(childComplexity, args["userId"].(int32)), true
+		return e.complexity.Query.ListFollowees(childComplexity, args["Id"].(int32)), true
 
 	case "Query.listFollowers":
 		if e.complexity.Query.ListFollowers == nil {
@@ -162,7 +162,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.ListFollowers(childComplexity, args["userId"].(int32)), true
+		return e.complexity.Query.ListFollowers(childComplexity, args["Id"].(int32)), true
 
 	case "Query.logIn":
 		if e.complexity.Query.LogIn == nil {
@@ -186,7 +186,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.User(childComplexity, args["id"].(int32)), true
+		return e.complexity.Query.User(childComplexity, args["Id"].(int32)), true
 
 	case "Query.users":
 		if e.complexity.Query.Users == nil {
@@ -198,7 +198,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.Users(childComplexity, args["id"].([]int32)), true
+		return e.complexity.Query.Users(childComplexity, args["Id"].([]int32)), true
 
 	case "Token.token":
 		if e.complexity.Token.Token == nil {
@@ -221,12 +221,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.User.ID(childComplexity), true
 
-	case "User.name":
-		if e.complexity.User.Name == nil {
+	case "User.login":
+		if e.complexity.User.Login == nil {
 			break
 		}
 
-		return e.complexity.User.Name(childComplexity), true
+		return e.complexity.User.Login(childComplexity), true
 
 	}
 	return 0, false
@@ -518,19 +518,19 @@ func (ec *executionContext) field_Query___type_argsName(
 func (ec *executionContext) field_Query_listFollowees_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_Query_listFollowees_argsUserID(ctx, rawArgs)
+	arg0, err := ec.field_Query_listFollowees_argsID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
-	args["userId"] = arg0
+	args["Id"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Query_listFollowees_argsUserID(
+func (ec *executionContext) field_Query_listFollowees_argsID(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (int32, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-	if tmp, ok := rawArgs["userId"]; ok {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("Id"))
+	if tmp, ok := rawArgs["Id"]; ok {
 		return ec.unmarshalNInt2int32(ctx, tmp)
 	}
 
@@ -541,19 +541,19 @@ func (ec *executionContext) field_Query_listFollowees_argsUserID(
 func (ec *executionContext) field_Query_listFollowers_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_Query_listFollowers_argsUserID(ctx, rawArgs)
+	arg0, err := ec.field_Query_listFollowers_argsID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
-	args["userId"] = arg0
+	args["Id"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Query_listFollowers_argsUserID(
+func (ec *executionContext) field_Query_listFollowers_argsID(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (int32, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-	if tmp, ok := rawArgs["userId"]; ok {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("Id"))
+	if tmp, ok := rawArgs["Id"]; ok {
 		return ec.unmarshalNInt2int32(ctx, tmp)
 	}
 
@@ -609,15 +609,15 @@ func (ec *executionContext) field_Query_user_args(ctx context.Context, rawArgs m
 	if err != nil {
 		return nil, err
 	}
-	args["id"] = arg0
+	args["Id"] = arg0
 	return args, nil
 }
 func (ec *executionContext) field_Query_user_argsID(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (int32, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-	if tmp, ok := rawArgs["id"]; ok {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("Id"))
+	if tmp, ok := rawArgs["Id"]; ok {
 		return ec.unmarshalNInt2int32(ctx, tmp)
 	}
 
@@ -632,15 +632,15 @@ func (ec *executionContext) field_Query_users_args(ctx context.Context, rawArgs 
 	if err != nil {
 		return nil, err
 	}
-	args["id"] = arg0
+	args["Id"] = arg0
 	return args, nil
 }
 func (ec *executionContext) field_Query_users_argsID(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) ([]int32, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-	if tmp, ok := rawArgs["id"]; ok {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("Id"))
+	if tmp, ok := rawArgs["Id"]; ok {
 		return ec.unmarshalNInt2ᚕint32ᚄ(ctx, tmp)
 	}
 
@@ -984,7 +984,7 @@ func (ec *executionContext) _Query_listFollowers(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ListFollowers(rctx, fc.Args["userId"].(int32))
+		return ec.resolvers.Query().ListFollowers(rctx, fc.Args["Id"].(int32))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1011,8 +1011,8 @@ func (ec *executionContext) fieldContext_Query_listFollowers(ctx context.Context
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_User_id(ctx, field)
-			case "name":
-				return ec.fieldContext_User_name(ctx, field)
+			case "login":
+				return ec.fieldContext_User_login(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
 			}
@@ -1047,7 +1047,7 @@ func (ec *executionContext) _Query_listFollowees(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ListFollowees(rctx, fc.Args["userId"].(int32))
+		return ec.resolvers.Query().ListFollowees(rctx, fc.Args["Id"].(int32))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1074,8 +1074,8 @@ func (ec *executionContext) fieldContext_Query_listFollowees(ctx context.Context
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_User_id(ctx, field)
-			case "name":
-				return ec.fieldContext_User_name(ctx, field)
+			case "login":
+				return ec.fieldContext_User_login(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
 			}
@@ -1110,7 +1110,7 @@ func (ec *executionContext) _Query_user(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().User(rctx, fc.Args["id"].(int32))
+		return ec.resolvers.Query().User(rctx, fc.Args["Id"].(int32))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1137,8 +1137,8 @@ func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field g
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_User_id(ctx, field)
-			case "name":
-				return ec.fieldContext_User_name(ctx, field)
+			case "login":
+				return ec.fieldContext_User_login(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
 			}
@@ -1173,7 +1173,7 @@ func (ec *executionContext) _Query_users(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Users(rctx, fc.Args["id"].([]int32))
+		return ec.resolvers.Query().Users(rctx, fc.Args["Id"].([]int32))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1200,8 +1200,8 @@ func (ec *executionContext) fieldContext_Query_users(ctx context.Context, field 
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_User_id(ctx, field)
-			case "name":
-				return ec.fieldContext_User_name(ctx, field)
+			case "login":
+				return ec.fieldContext_User_login(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
 			}
@@ -1441,8 +1441,8 @@ func (ec *executionContext) fieldContext_User_id(_ context.Context, field graphq
 	return fc, nil
 }
 
-func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_User_name(ctx, field)
+func (ec *executionContext) _User_login(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_login(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1455,7 +1455,7 @@ func (ec *executionContext) _User_name(ctx context.Context, field graphql.Collec
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Name, nil
+		return obj.Login, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1472,7 +1472,7 @@ func (ec *executionContext) _User_name(ctx context.Context, field graphql.Collec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_User_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_User_login(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "User",
 		Field:      field,
@@ -3760,8 +3760,8 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "name":
-			out.Values[i] = ec._User_name(ctx, field, obj)
+		case "login":
+			out.Values[i] = ec._User_login(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

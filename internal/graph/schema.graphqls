@@ -4,7 +4,7 @@
 
 type User {
   id: Int!
-  name: String!
+  login: String!
   email: String!
 }
 
@@ -14,10 +14,10 @@ type Token {
 
 type Query {
   logIn(login: String!, password: String!): Token! 
-  listFollowers(userId: Int!): [User!]!
-  listFollowees(userId: Int!): [User!]!
-  user(id: Int!): User!
-  users(id: [Int!]!): [User!]!
+  listFollowers(Id: Int!): [User!]!
+  listFollowees(Id: Int!): [User!]!
+  user(Id: Int!): User!
+  users(Id: [Int!]!): [User!]!
 }
 
 type Mutation {
