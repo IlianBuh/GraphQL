@@ -5,16 +5,20 @@ import (
 	"github.com/IlianBuh/GraphQL/internal/graph/model"
 )
 
-func UserToApi(users []*models.User) []*model.User {
+func MUsersToApi(users []*models.User) []*model.User {
 	res := make([]*model.User, len(users))
 
 	for i, user := range users {
-		res[i] = &model.User{
-			ID:    int32(user.Id),
-			Name:  user.Login,
-			Email: user.Email,
-		}
+		res[i] = UserToApi(user)
 	}
 
 	return res
+}
+
+func UserToApi(user *models.User) *model.User {
+	return &model.User{
+		ID:    int32(user.Id),
+		Login: user.Login,
+		Email: user.Email,
+	}
 }
