@@ -58,7 +58,7 @@ func (r *mutationResolver) Unfollow(ctx context.Context, srcID int32, targetID i
 		return nil, sendErr(InvalidArgument, err)
 	}
 
-	err := r.SSO.Follow(ctx, int(srcID), int(targetID))
+	err := r.SSO.Unfollow(ctx, int(srcID), int(targetID))
 	if err != nil {
 		return nil, sendErr(Internal, err)
 	}
