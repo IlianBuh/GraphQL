@@ -7,8 +7,6 @@ import (
 	sgrpc "github.com/IlianBuh/GraphQL/internal/clients/sso/grpc"
 	"github.com/IlianBuh/GraphQL/internal/domain/models"
 	"github.com/IlianBuh/GraphQL/internal/lib/mapper"
-	"github.com/IlianBuh/GraphQL/internal/lib/sl"
-	_ "github.com/IlianBuh/SSO_Protobuf/gen/go/user"
 	userinfov1 "github.com/IlianBuh/SSO_Protobuf/gen/go/userinfo"
 	"google.golang.org/grpc"
 )
@@ -37,7 +35,6 @@ func (c *UserInfoClient) User(ctx context.Context, uuid int) (*models.User, erro
 		},
 	)
 	if err != nil {
-		log.Error("failed to get followers' list", sl.Err(err))
 		return nil, sgrpc.HandleError(op, err, log)
 	}
 
@@ -56,7 +53,6 @@ func (c *UserInfoClient) Users(ctx context.Context, uuids []int) ([]*models.User
 		},
 	)
 	if err != nil {
-		log.Error("failed to get followers' list", sl.Err(err))
 		return nil, sgrpc.HandleError(op, err, log)
 	}
 
@@ -75,7 +71,6 @@ func (c *UserInfoClient) UsersExist(ctx context.Context, uuid []int) (bool, erro
 		},
 	)
 	if err != nil {
-		log.Error("failed to check", sl.Err(err))
 		return false, sgrpc.HandleError(op, err, log)
 	}
 
@@ -92,7 +87,6 @@ func (c *UserInfoClient) UsersByLogin(ctx context.Context, login string) ([]*mod
 		Login: login,
 	})
 	if err != nil {
-		log.Error("failed to get users", sl.Err(err))
 		return nil, sgrpc.HandleError(op, err, log)
 	}
 

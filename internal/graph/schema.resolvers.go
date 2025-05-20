@@ -6,9 +6,7 @@ package graph
 
 import (
 	"context"
-	"errors"
 
-	serrors "github.com/IlianBuh/GraphQL/internal/clients/sso/errors"
 	"github.com/IlianBuh/GraphQL/internal/graph/model"
 	"github.com/IlianBuh/GraphQL/internal/lib/mapper"
 	"github.com/IlianBuh/GraphQL/internal/lib/validate"
@@ -22,11 +20,7 @@ func (r *mutationResolver) SignUp(ctx context.Context, login string, email strin
 
 	token, err := r.SSO.SignUp(ctx, login, email, password)
 	if err != nil {
-		var ssoerr *serrors.Error
-		if errors.As(err, &ssoerr) {
-			return nil, handleSsoError(ssoerr)
-		}
-		return nil, sendErr(Internal, err)
+		return nil, handleError(err)
 	}
 
 	return &model.Token{Token: token}, nil
@@ -74,12 +68,7 @@ func (r *queryResolver) LogIn(ctx context.Context, login string, password string
 
 	token, err := r.SSO.LogIn(ctx, login, password)
 	if err != nil {
-		var ssoerr *serrors.Error
-		if errors.As(err, &ssoerr) {
-			return nil, handleSsoError(ssoerr)
-		}
-
-		return nil, sendErr(Internal, err)
+		return nil, handleError(err)
 	}
 
 	return &model.Token{Token: token}, nil
@@ -93,12 +82,7 @@ func (r *queryResolver) ListFollowers(ctx context.Context, id int32) ([]*model.U
 
 	users, err := r.SSO.FollowersList(ctx, id)
 	if err != nil {
-		var ssoerr *serrors.Error
-		if errors.As(err, &ssoerr) {
-			return nil, handleSsoError(ssoerr)
-		}
-
-		return nil, sendErr(Internal, err)
+		return nil, handleError(err)
 	}
 
 	return mapper.MUsersToApi(users), nil
@@ -112,12 +96,7 @@ func (r *queryResolver) ListFollowees(ctx context.Context, id int32) ([]*model.U
 
 	users, err := r.SSO.FolloweesList(ctx, id)
 	if err != nil {
-		var ssoerr *serrors.Error
-		if errors.As(err, &ssoerr) {
-			return nil, handleSsoError(ssoerr)
-		}
-
-		return nil, sendErr(Internal, err)
+		return nil, handleError(err)
 	}
 
 	return mapper.MUsersToApi(users), nil
@@ -131,12 +110,7 @@ func (r *queryResolver) User(ctx context.Context, id int32) (*model.User, error)
 
 	user, err := r.SSO.User(ctx, int(id))
 	if err != nil {
-		var ssoerr *serrors.Error
-		if errors.As(err, &ssoerr) {
-			return nil, handleSsoError(ssoerr)
-		}
-
-		return nil, sendErr(Internal, err)
+		return nil, handleError(err)
 	}
 
 	return mapper.UserToApi(user), err
@@ -150,12 +124,7 @@ func (r *queryResolver) Users(ctx context.Context, id []int32) ([]*model.User, e
 
 	users, err := r.SSO.Users(ctx, mapper.NumsTToNumsE[int32, int](id))
 	if err != nil {
-		var ssoerr *serrors.Error
-		if errors.As(err, &ssoerr) {
-			return nil, handleSsoError(ssoerr)
-		}
-
-		return nil, sendErr(Internal, err)
+		return nil, handleError(err)
 	}
 
 	return mapper.MUsersToApi(users), err
