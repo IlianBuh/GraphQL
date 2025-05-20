@@ -1,11 +1,11 @@
 package graph
 
 import (
-	"encoding/json"
 	"errors"
 
 	ssocodes "github.com/IlianBuh/GraphQL/internal/clients/sso/codes"
 	serrors "github.com/IlianBuh/GraphQL/internal/clients/sso/errors"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 var (
@@ -25,55 +25,56 @@ func handleError(err error) error {
 	if errors.As(err, &ssoerr) {
 		switch ssoerr.Code {
 		case ssocodes.InvalidArgument:
-			gqlerror := GQLError{
-				Base: err,
-				Info: InvalidArgument,
+			gqlerror := gqlerror.Error{
+				Err: ssoerr,
+				Extensions: map[string]interface{}{
+					"code":    InvalidArgument.Code,
+					"message": InvalidArgument.Message,
+				},
 			}
-			return gqlerror
+			return &gqlerror
 		case ssocodes.Unknown, ssocodes.Internal:
-			gqlerror := GQLError{
-				Base: err,
-				Info: Internal,
+			gqlerror := gqlerror.Error{
+				Err: ssoerr,
+				Extensions: map[string]interface{}{
+					"code":    Internal.Code,
+					"message": Internal.Message,
+				},
 			}
-			return gqlerror
+			return &gqlerror
 		default:
-			gqlerror := GQLError{
-				Base: err,
-				Info: Internal,
+			gqlerror := gqlerror.Error{
+				Err: ssoerr,
+				Extensions: map[string]interface{}{
+					"code":    Internal.Code,
+					"message": Internal.Message,
+				},
 			}
-			return gqlerror
+			return &gqlerror
 		}
 	} else {
-		gqlerror := GQLError{
-			Base: err,
-			Info: Internal,
+		gqlerror := gqlerror.Error{
+			Err: err,
+			Extensions: map[string]interface{}{
+				"code":    Internal.Code,
+				"message": Internal.Message,
+			},
 		}
-		return gqlerror
+		return &gqlerror
 	}
 }
 
 func sendErr(info GQLErrorInfo, err error) error {
-	return GQLError{
-		Base: err,
-		Info: info,
+	return &gqlerror.Error{
+		Err: err,
+		Extensions: map[string]interface{}{
+			"code":    info.Code,
+			"message": info.Message,
+		},
 	}
-}
-
-type GQLError struct {
-	Base error `json:"-"`
-	Info GQLErrorInfo
 }
 
 type GQLErrorInfo struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
-}
-
-func (g GQLError) Error() string {
-	bytes, _ := json.Marshal(g)
-	return string(bytes)
-}
-
-func (g GQLError) Unwrap() error {
-	return g.Base
 }
