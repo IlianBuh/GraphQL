@@ -127,7 +127,7 @@ func (r *queryResolver) Users(ctx context.Context, id []int32) ([]*model.User, e
 		return nil, handleError(err)
 	}
 
-	return mapper.MUsersToApi(users), err
+	return mapper.MUsersToApi(users), nil
 }
 
 // UsersByLogin is the resolver for the usersByLogin field.
