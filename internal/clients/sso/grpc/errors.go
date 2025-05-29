@@ -5,8 +5,8 @@ import (
 
 	ssocodes "github.com/IlianBuh/GraphQL/internal/clients/sso/codes"
 	"github.com/IlianBuh/GraphQL/internal/clients/sso/errors"
+	e "github.com/IlianBuh/GraphQL/internal/lib/errors"
 	"github.com/IlianBuh/GraphQL/internal/lib/sl"
-	e "github.com/IlianBuh/GraphQL/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

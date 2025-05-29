@@ -7,6 +7,7 @@ import (
 	sgrpc "github.com/IlianBuh/GraphQL/internal/clients/sso/grpc"
 	"github.com/IlianBuh/GraphQL/internal/domain/models"
 	"github.com/IlianBuh/GraphQL/internal/lib/mapper"
+	"github.com/IlianBuh/GraphQL/internal/lib/sl"
 	userinfov1 "github.com/IlianBuh/SSO_Protobuf/gen/go/userinfo"
 	"google.golang.org/grpc"
 )
@@ -87,8 +88,10 @@ func (c *UserInfoClient) UsersByLogin(ctx context.Context, login string) ([]*mod
 		Login: login,
 	})
 	if err != nil {
+		log.Error("failed to fetch user", sl.Err(err))
 		return nil, sgrpc.HandleError(op, err, log)
 	}
 
+	log.Info("users are fetched", slog.Any("users", users))
 	return mapper.MGrpcUserToDomain(users.GetUsers()), nil
 }

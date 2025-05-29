@@ -106,6 +106,7 @@ func (c *FollowClient) FolloweesList(
 	const op = "sso-grpc-client.FolloweesList"
 	log := c.log.With("op", op)
 	log.Info("starting to fetch followees")
+	ctx = context.Background()
 
 	resp, err := c.follow.Followees(
 		ctx,

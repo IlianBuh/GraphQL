@@ -8,9 +8,9 @@ import (
 	"github.com/IlianBuh/GraphQL/internal/clients/sso/grpc/follow"
 	"github.com/IlianBuh/GraphQL/internal/clients/sso/grpc/userinfo"
 	"github.com/IlianBuh/GraphQL/internal/domain/models"
+	e "github.com/IlianBuh/GraphQL/internal/lib/errors"
 	"github.com/IlianBuh/GraphQL/internal/lib/net"
 	"github.com/IlianBuh/GraphQL/internal/lib/sl"
-	e "github.com/IlianBuh/GraphQL/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

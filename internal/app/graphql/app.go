@@ -16,8 +16,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/IlianBuh/GraphQL/internal/domain/models"
 	"github.com/IlianBuh/GraphQL/internal/graph"
+	e "github.com/IlianBuh/GraphQL/internal/lib/errors"
 	n "github.com/IlianBuh/GraphQL/internal/lib/net"
-	e "github.com/IlianBuh/GraphQL/pkg/errors"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
